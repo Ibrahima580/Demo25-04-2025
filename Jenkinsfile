@@ -18,8 +18,8 @@ pipeline {
 
         stage('Tests') {
             steps {
-                sh 'cd backend && pip install -r requirements.txt && pytest'
-                sh 'cd frontend && npm install && npm test'
+                sh 'cd Backend && pip install -r requirements.txt && pytest'
+                sh 'cd Frontend && npm install && npm test'
             }
         }
 
