@@ -11,15 +11,25 @@ pipeline {
     stages {
         stage('Cloner le dépôt') {
             steps {
-            	git branch: 'main',
-                     url :'https://github.com/zouboss/projet_fil_rouge.git'
+                git branch: 'main',
+                    url: 'https://github.com/zouboss/projet_fil_rouge.git'
             }
         }
 
         stage('Tests') {
             steps {
-                sh 'cd Backend && pip install -r requirements.txt && pytest'
-                sh 'cd Frontend && npm install && npm test'
+                sh '''
+                    cd Backend
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                    pytest
+                '''
+                sh '''
+                    cd Frontend
+                    npm install
+                    npm test
+                '''
             }
         }
 
@@ -55,7 +65,7 @@ pipeline {
     post {
         success {
             mail to: 'alassanebenzecoly@gmail.com',
-                 subject: "Déploiement local réussi",
+                 subject: "✅ Déploiement local réussi",
                  body: "L'application a été déployée localement avec succès."
         }
         failure {
