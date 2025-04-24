@@ -11,7 +11,8 @@ pipeline {
     stages {
         stage('Cloner le dépôt') {
             steps {
-                git 'https://github.com/zouboss/projet_fil_rouge.git'
+            	git branch: 'main',
+                     url :'https://github.com/zouboss/projet_fil_rouge.git'
             }
         }
 
