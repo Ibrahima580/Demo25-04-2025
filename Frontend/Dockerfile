@@ -1,32 +1,32 @@
-# 1. Utilise l'image officielle de Node.js
+# Étape 1 : Build de l'application
 FROM node:18-alpine AS build
 
-# 2. Crée un dossier de travail dans le conteneur
+# Crée un dossier de travail dans le conteneur
 WORKDIR /app
 
-# 3. Copie les fichiers du projet
-COPY package.json ./
+# Copie package.json ET package-lock.json avant npm install
+COPY package*.json ./
 
-# 4. Installe les dépendances
+# Installe les dépendances
 RUN npm install
 
-# 5. Copie le reste des fichiers
+# Copie le reste des fichiers du projet
 COPY . .
 
-# 6. Build l'application
+# Build de l'application (React, Vue, etc.)
 RUN npm run build
 
-# Phase de production
+# Étape 2 : Phase de production
 FROM nginx:stable-alpine AS production
 
-# 🔥 On ajoute le fichier de config nginx
+# Copie de la config nginx
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Copie des fichiers générés
+# Copie les fichiers générés depuis le build vers nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Exposition du port
 EXPOSE 80
 
-# Démarrage de nginx
-CMD ["nginx","-g", "daemon off;"]
+# Commande pour lancer nginx
+CMD ["nginx", "-g", "daemon off;"]
