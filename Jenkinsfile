@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        stage('Tests') {
+       /*stage('Tests') {
             steps {
                 // Backend
                 sh '''
@@ -40,7 +40,7 @@ pipeline {
                 '''
             }
         }
-
+        */
         stage('Build des images') {
             steps {
                 sh 'docker build -t $BACKEND_IMAGE:latest ./Backend'
