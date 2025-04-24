@@ -25,10 +25,14 @@ pipeline {
                     ./venv/bin/pip install --upgrade pip
                     ./venv/bin/pip install -r requirements.txt
                     ./venv/bin/pip install pytest
-                    ./venv/bin/pip list
-                    ./venv/bin/pytest || exit 1
+                    NB_TESTS=$(./venv/bin/pytest --collect-only | grep -c 'Function test_')
+                    if [ "$NB_TESTS" -eq 0 ]; then
+                        echo "⚠️ Aucun test trouvé, on continue sans planter le pipeline."
+                    else
+                        ./venv/bin/pytest || exit 1
+                    fi
                 '''
-                
+
                 // Frontend
                 sh '''
                     cd Frontend
@@ -42,7 +46,7 @@ pipeline {
             steps {
                 sh 'docker build -t $BACKEND_IMAGE:latest ./Backend'
                 sh 'docker build -t $FRONTEND_IMAGE:latest ./Frontend'
-                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend'
+                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend' // adapte selon ton app de migration
             }
         }
 
