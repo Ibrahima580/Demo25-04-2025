@@ -21,20 +21,17 @@ pipeline {
                 // Backend
                 sh '''
                     cd Backend/odc
-                    rm -rf venv
                     python3 -m venv venv
-                    . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
-                    pytest
-                    deactivate
+                    ./venv/bin/pip install --upgrade pip
+                    ./venv/bin/pip install -r requirements.txt
+                    ./venv/bin/pytest || exit 1
                 '''
                 
                 // Frontend
                 sh '''
                     cd Frontend
                     npm install
-                    npm test
+                    npm test || exit 1
                 '''
             }
         }
@@ -43,7 +40,7 @@ pipeline {
             steps {
                 sh 'docker build -t $BACKEND_IMAGE:latest ./Backend'
                 sh 'docker build -t $FRONTEND_IMAGE:latest ./Frontend'
-                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend' // adapte selon ton app de migration
+                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend'
             }
         }
 
