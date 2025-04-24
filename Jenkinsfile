@@ -12,22 +12,25 @@ pipeline {
         stage('Cloner le dépôt') {
             steps {
                 git branch: 'main',
-                    url :'https://github.com/zouboss/projet_fil_rouge.git'
+                    url: 'https://github.com/zouboss/projet_fil_rouge.git'
             }
         }
 
         stage('Tests') {
             steps {
+                // Backend
                 sh '''
                     cd Backend
+                    rm -rf venv
                     python3 -m venv venv
-                    chmod -R u+x venv
                     . venv/bin/activate
+                    pip install --upgrade pip
                     pip install -r requirements.txt
                     pytest
                     deactivate
-                    rm -rf venv
                 '''
+                
+                // Frontend
                 sh '''
                     cd Frontend
                     npm install
@@ -40,7 +43,7 @@ pipeline {
             steps {
                 sh 'docker build -t $BACKEND_IMAGE:latest ./Backend'
                 sh 'docker build -t $FRONTEND_IMAGE:latest ./Frontend'
-                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend' // adapte si tu as un dossier migrate
+                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend' // adapte selon ton app de migration
             }
         }
 
@@ -68,7 +71,7 @@ pipeline {
     post {
         success {
             mail to: 'alassanebenzecoly@gmail.com',
-                 subject: "Déploiement local réussi",
+                 subject: "✅ Déploiement local réussi",
                  body: "L'application a été déployée localement avec succès."
         }
         failure {
