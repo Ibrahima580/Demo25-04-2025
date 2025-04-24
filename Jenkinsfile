@@ -24,7 +24,6 @@ pipeline {
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip
                     ./venv/bin/pip install -r requirements.txt
-                    ./venv/bin/pip install pytest
                     NB_TESTS=$(./venv/bin/pytest --collect-only | grep -c 'Function test_')
                     if [ "$NB_TESTS" -eq 0 ]; then
                         echo "⚠️ Aucun test trouvé, on continue sans planter le pipeline."
@@ -46,7 +45,7 @@ pipeline {
             steps {
                 sh 'docker build -t $BACKEND_IMAGE:latest ./Backend'
                 sh 'docker build -t $FRONTEND_IMAGE:latest ./Frontend'
-                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend' // adapte selon ton app de migration
+                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend'
             }
         }
 
