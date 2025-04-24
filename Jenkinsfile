@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         DOCKER_USER = 'zouboss'
-        BACKEND_IMAGE = "${zouboss}/projetfilrouge_backend"
-        FRONTEND_IMAGE = "${zouboss}/projetfilrouge_frontend"
-        MIGRATE_IMAGE = "${zouboss}/projetfilrouge_migrate"
+        BACKEND_IMAGE = "${DOCKER_USER}/projetfilrouge_backend"
+        FRONTEND_IMAGE = "${DOCKER_USER}/projetfilrouge_frontend"
+        MIGRATE_IMAGE = "${DOCKER_USER}/projetfilrouge_migrate"
     }
 
     stages {
@@ -24,18 +24,18 @@ pipeline {
 
         stage('Build des images') {
             steps {
-                sh 'docker build -t $projetfilrouge_backend:latest ./backend'
-                sh 'docker build -t $projetfilrouge_frontend:latest ./frontend'
-                sh 'docker build -t $projetfilrouge_migrate:latest ./backend' // ou ./migrate si tu as un dossier spécifique
+                sh 'docker build -t $BACKEND_IMAGE:latest ./Backend'
+                sh 'docker build -t $FRONTEND_IMAGE:latest ./Frontend'
+                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend' // adapte si tu as un dossier migrate
             }
         }
 
         stage('Push des images sur Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-hub-creds', url: '']) {
-                    sh 'docker push $projetfilrouge_backend:latest'
-                    sh 'docker push $projetfilrouge_frontend:latest'
-                    sh 'docker push $projetfilrouge_migrate:latest'
+                withDockerRegistry([credentialsId: 'docker_cred', url: '']) {
+                    sh 'docker push $BACKEND_IMAGE:latest'
+                    sh 'docker push $FRONTEND_IMAGE:latest'
+                    sh 'docker push $MIGRATE_IMAGE:latest'
                 }
             }
         }
@@ -59,9 +59,8 @@ pipeline {
         }
         failure {
             mail to: 'alassanebenzecoly@gmail.com',
-                 subject: "Échec du pipeline Jenkins",
+                 subject: "❌ Échec du pipeline Jenkins",
                  body: "Une erreur s’est produite, merci de vérifier Jenkins."
         }
     }
 }
-
