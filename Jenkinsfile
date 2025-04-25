@@ -15,32 +15,6 @@ pipeline {
                     url: 'https://github.com/zouboss/projet_fil_rouge.git'
             }
         }
-
-       /*stage('Tests') {
-            steps {
-                // Backend
-                sh '''
-                    cd Backend/odc
-                    python3 -m venv venv
-                    ./venv/bin/pip install --upgrade pip
-                    ./venv/bin/pip install -r requirements.txt
-                    NB_TESTS=$(./venv/bin/pytest --collect-only | grep -c 'Function test_')
-                    if [ "$NB_TESTS" -eq 0 ]; then
-                        echo "⚠️ Aucun test trouvé, on continue sans planter le pipeline."
-                    else
-                        ./venv/bin/pytest || exit 1
-                    fi
-                '''
-
-                // Frontend
-                sh '''
-                    cd Frontend
-                    npm install
-                    npm test || exit 1
-                '''
-            }
-        }
-        */
         stage('Build des images') {
             steps {
                 sh 'docker build -t $BACKEND_IMAGE:latest ./Backend/odc'
