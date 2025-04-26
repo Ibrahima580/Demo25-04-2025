@@ -2,17 +2,17 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER = 'zouboss'
-        BACKEND_IMAGE = "${DOCKER_USER}/projetfilrouge_backend"
-        FRONTEND_IMAGE = "${DOCKER_USER}/projetfilrouge_frontend"
-        MIGRATE_IMAGE = "${DOCKER_USER}/projetfilrouge_migrate"
+        DOCKER_USER = 'ibrahim372'
+        BACKEND_IMAGE = "${DOCKER_USER}/demo25-04-2025_backend"
+        FRONTEND_IMAGE = "${DOCKER_USER}/demo25-04-2025_frontend"
+        MIGRATE_IMAGE = "${DOCKER_USER}/demo25-04-2025_migrate"
     }
 
     stages {
         stage('Cloner le dépôt') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/zouboss/projet_fil_rouge.git'
+                    url: 'https://github.com/gourou17/Demo25-04-2025.git'
             }
         }
         stage('Build des images') {
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Push des images sur Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'docker_cred', url: '']) {
+                withDockerRegistry([credentialsId: 'jenkins-access', url: '']) {
                     sh 'docker push $BACKEND_IMAGE:latest'
                     sh 'docker push $FRONTEND_IMAGE:latest'
                     sh 'docker push $MIGRATE_IMAGE:latest'
@@ -46,14 +46,10 @@ pipeline {
 
     post {
         success {
-            mail to: 'alassanebenzecoly@gmail.com',
-                 subject: "✅ Déploiement local réussi",
-                 body: "L'application a été déployée localement avec succès."
+            echo "✅ CI/CD terminé avec succès"
         }
         failure {
-            mail to: 'alassanebenzecoly@gmail.com',
-                 subject: "❌ Échec du pipeline Jenkins",
-                 body: "Une erreur s’est produite, merci de vérifier Jenkins."
+            echo "❌ Échec du pipeline"
         }
     }
 }
