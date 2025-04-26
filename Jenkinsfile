@@ -9,10 +9,10 @@ pipeline {
     }
 
     stages {
-        stage('Cloner le dépôt') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/gourou17/Demo25-04-2025.git'
+                echo "📥 Clonage du dépôt Git"
+                checkout scm
             }
         }
         stage('Build des images') {
