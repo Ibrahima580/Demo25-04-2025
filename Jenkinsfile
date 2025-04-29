@@ -2,54 +2,28 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER = 'ibrahim372'
-        BACKEND_IMAGE = "${DOCKER_USER}/demo25-04-2025_backend"
-        FRONTEND_IMAGE = "${DOCKER_USER}/demo25-04-2025_frontend"
-        MIGRATE_IMAGE = "${DOCKER_USER}/demo25-04-2025_migrate"
+        SONARQUBE_SERVER = 'SonarQube'   // Nom de ton serveur Sonar dans Jenkins
+        SONARQUBE_TOKEN = credentials('access-sonar')  // ID de ton credential
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                echo "📥 Clonage du dépôt Git"
                 checkout scm
             }
         }
-        stage('Build des images') {
+       
+        stage('SonarQube Analysis') {
             steps {
-                sh 'docker build -t $BACKEND_IMAGE:latest ./Backend/odc'
-                sh 'docker build -t $FRONTEND_IMAGE:latest ./Frontend'
-                sh 'docker build -t $MIGRATE_IMAGE:latest ./Backend/odc'
-            }
-        }
-
-        stage('Push des images sur Docker Hub') {
-            steps {
-                withDockerRegistry([credentialsId: 'jenkins-access', url: '']) {
-                    sh 'docker push $BACKEND_IMAGE:latest'
-                    sh 'docker push $FRONTEND_IMAGE:latest'
-                    sh 'docker push $MIGRATE_IMAGE:latest'
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    script {
+                        def scannerHome = tool 'SonarScanner' // <- Ici on charge SonarScanner installé dans Jenkins
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \   -Dsonar.projectKey=Test \   -Dsonar.sources=. \   -Dsonar.host.url=http://localhost:9000 \   -Dsonar.token=sqp_7daf77d4e07393d6051da4af1a4168fe4a1c539f
+                        """
+                    }
                 }
             }
-        }
-
-        stage('Déploiement local avec Docker Compose') {
-            steps {
-                sh '''
-                    docker-compose down || true
-                    docker-compose pull
-                    docker-compose up -d --build
-                '''
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ CI/CD terminé avec succès"
-        }
-        failure {
-            echo "❌ Échec du pipeline"
         }
     }
 }
