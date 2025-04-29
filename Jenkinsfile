@@ -23,7 +23,7 @@ pipeline {
                               -Dsonar.projectKey=Test \
                               -Dsonar.sources=. \
                               -Dsonar.host.url=http://localhost:9000 \
-                              -Dsonar.token=sqp_7daf77d4e07393d6051da4af1a4168fe4a1c539f
+                              -Dsonar.token=${SONARQUBE_TOKEN}
                         """
                     }
                 }
