@@ -17,14 +17,10 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONARQUBE_SERVER}") {
                     script {
-                        def scannerHome = tool 'SonarScanner'
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                              -Dsonar.projectKey=Test \
-                              -Dsonar.sources=. \
-                              -Dsonar.host.url=http://localhost:9000 \
-                              -Dsonar.token=${SONARQUBE_TOKEN}
-                           """
+                         def scannerHome = tool 'SonarScanner';
+                                withSonarQubeEnv() {
+                                sh "${scannerHome}/bin/sonar-scanner"
+                        
                     }
                 }
             }
