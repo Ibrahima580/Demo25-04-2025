@@ -11,8 +11,7 @@ pipeline {
     stages {
         stage('Cloner le dépôt') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/gourou17/Demo25-04-2025.git'
+                 checkout scm
             }
         }
         stage('Build des images') {
